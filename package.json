@@ -1,0 +1,12 @@
+{
+  "name": "@wanglin1994/video-timeline",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dayjs": "^1.10.3"
+  }
+}
