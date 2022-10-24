@@ -19,7 +19,7 @@ $ npm i @wanglin1994/video-timeline
 ## 引入
 
 ```js
-import VideoTimeline from '@zf/video-timeline'
+import VideoTimeline from '@wanglin1994/video-timeline'
 Vue.use(VideoTimeline)
 ```
 
