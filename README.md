@@ -13,7 +13,7 @@ npm i @wanglin1994/video-timeline
 ## 安装
 
 ```bash
-$ npm i @zf/video-timeline
+$ npm i @wanglin1994/video-timeline
 ```
 
 ## 引入
