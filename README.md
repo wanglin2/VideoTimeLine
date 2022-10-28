@@ -1,5 +1,23 @@
 一个基于Vue2的时间轴组件，一般用于监控视频的回放。
 
+# 文章
+
+[手摸手带你实现一个时间轴组件](https://juejin.cn/post/7157917487953084429)
+
+# 本地开发
+
+```bash
+git clone https://github.com/wanglin2/VideoTimeLine.git
+cd package
+npm i
+npm link
+cd ..
+cd demo
+npm i
+npm link @wanglin1994/video-timeline
+npm run serve
+```
+
 # 安装
 
 ```bash
@@ -8,22 +26,14 @@ npm i @wanglin1994/video-timeline
 
 > 注意：源码未打包直接发布，有需要请自行配置打包文件。
 
-# TimeLine 视频时间轴组件
-
-## 安装
-
-```bash
-$ npm i @wanglin1994/video-timeline
-```
-
-## 引入
+# 引入
 
 ```js
 import VideoTimeline from '@wanglin1994/video-timeline'
 Vue.use(VideoTimeline)
 ```
 
-## 基础用法
+# 基础用法
 
 ```vue
 <template>
@@ -131,7 +141,7 @@ export default {
 </style>
 ```
 
-## 显示时间段
+# 显示时间段
 
 ```vue
 <template>
@@ -225,7 +235,7 @@ export default {
 </style>
 ```
 
-## 多个时间轴
+# 多个时间轴
 
 当超过一个播放窗口时可以显示多个时间轴。
 
@@ -374,7 +384,7 @@ export default {
 </style>
 ```
 
-## 显示自定义元素
+# 显示自定义元素
 
 有时候会想在时间轴上显示一些自定义的东西，比如某个时间段显示一张图片之类的，这可以通过监听某个时间点的位置来实现。
 
@@ -491,15 +501,15 @@ export default {
 </style>
 ```
 
-## API
+# API
 
-### 属性
+## 属性
 
 | 参数  | 说明                               | 类型   | 可选值 | 默认值 |
 | ----- | ---------------------------------- | ------ | ------ | ------ |
 | initTime | 初始时间，中点所在的时间，默认为当天0点。可以传递数字类型的时间戳或字符串类型的时间，如：2020-12-19 18:30:00 | Number/String | —      |  |
 | timeRange | 中间刻度所允许显示的时间范围，即当前时间的限定范围，对象类型，字段见表1-1 | Object | —      |  |
-| initZoomIndex | 初始的时间分辨率，数字索引，时间分辨率数组为：['半小时', '1小时', '2小时', '6小时', '12小时', '1天', '3天', '15天', '30天'] | Number | —      | 5 |
+| initZoomIndex | 初始的时间分辨率，数字索引，时间分辨率数组为：['半小时', '1小时', '2小时', '6小时', '12小时', '1天', '3天', '15天', '30天', '365天', '3650天'] | Number | —      | 5 |
 | showCenterLine | 是否显示中间的竖线 | Boolean | —      | true |
 | centerLineStyle | 中间竖线的样式，对象类型，字段见表1-2 | Object | —      |  |
 | textColor | 日期时间文字的颜色 | String | —      | rgba(151,158,167,1) |
@@ -515,21 +525,21 @@ export default {
 | baseTimeLineHeight | 当显示windowList时的基础时间轴高度 | Number | —      | 50 |
 | initSelectWindowTimeLineIndex | 初始选中的窗口时间轴索引 | Number | —      | -1 |
 
-#### 表1-1 timeRange对象的字段格式
+### 表1-1 timeRange对象的字段格式
 
 | 字段名  | 说明                               | 类型   | 可选值 | 默认值 |
 | ----- | ---------------------------------- | ------ | ------ | ------ |
 | start | 允许显示的最小时间，可以传递数字类型的时间戳或字符串类型的时间，如：2020-12-19 18:30:00 | Number/String | —      |  |
 | end | 允许显示的最大时间，可以传递数字类型的时间戳或字符串类型的时间，如：2020-12-19 18:30:00 | Number/String | —      |  |
 
-#### 表1-2 centerLineStyle对象的字段格式
+### 表1-2 centerLineStyle对象的字段格式
 
 | 字段名  | 说明                               | 类型   | 可选值 | 默认值 |
 | ----- | ---------------------------------- | ------ | ------ | ------ |
 | width | 线的宽度，单位px | Number | —      | 2 |
 | color | 线的颜色 | String | —      | #fff |
 
-#### 表1-3 lineHeightRatio对象的字段格式
+### 表1-3 lineHeightRatio对象的字段格式
 
 | 字段名  | 说明                               | 类型   | 可选值 | 默认值 |
 | ----- | ---------------------------------- | ------ | ------ | ------ |
@@ -538,7 +548,7 @@ export default {
 | none | 不显示时间的线段高度 | Number | —      | 0.1 |
 | hover | 鼠标滑过时显示的时间段高度 | Number | —      | 0.3 |
 
-#### 表1-4 timeSegments数组的对象元素的字段格式
+### 表1-4 timeSegments数组的对象元素的字段格式
 
 | 字段名  | 说明                               | 类型   | 可选值 | 默认值 |
 | ----- | ---------------------------------- | ------ | ------ | ------ |
@@ -548,14 +558,14 @@ export default {
 | startRatio | 高度的起始比例，即top=时间轴高度*startRatio | Number | —      | 0.6 |
 | endRatio | 高度的结束比例，即bottom=时间轴高度*endRatio | Number | —      | 0.9 |
 
-#### 表1-5 windowList数组的对象元素的字段格式
+### 表1-5 windowList数组的对象元素的字段格式
 
 | 字段名  | 说明                               | 类型   | 可选值 | 默认值 |
 | ----- | ---------------------------------- | ------ | ------ | ------ |
 | timeSegments | 要显示的时间段，对象数组，对象字段见表1-4 | Array | —      | [] |
 可以添加你需要的其他任意字段
 
-### 事件
+## 事件
 
 | 事件  | 说明                               | 回调函数参数 |
 | ----- | ---------------------------------- | ------ |
@@ -567,7 +577,7 @@ export default {
 | click_window_timeSegments | 点击到了窗口时间轴里的时间段时触发 | timeSegments（点击到的时间段，数组类型）、index（时间轴索引）、item（时间轴数据） |
 | change_window_time_line | 点击窗口时间轴进行切换选中时触发 | index（时间轴索引）、item（时间轴数据） |
 
-### 方法
+## 方法
 
 | 方法名  | 说明                               | 参数 |
 | ----- | ---------------------------------- | ------ |

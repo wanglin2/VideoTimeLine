@@ -1,32 +1,14 @@
 <template>
-  <div
-    class="timeLineContainer"
-    ref="timeLineContainer"
-    :style="{
-      backgroundColor: backgroundColor,
-    }"
-    @touchstart="onTouchstart"
-    @touchmove="onTouchmove"
-    @mousedown="onMousedown"
-    @mouseout="onMouseout"
-    @mousemove="onMousemove"
-    @mouseleave="onMouseleave"
-  >
+  <div class="timeLineContainer" ref="timeLineContainer" :style="{
+    backgroundColor: backgroundColor,
+  }" @touchstart="onTouchstart" @touchmove="onTouchmove" @mousedown="onMousedown" @mouseout="onMouseout"
+    @mousemove="onMousemove" @mouseleave="onMouseleave">
     <canvas class="canvas" ref="canvas" @mousewheel.stop.prevent="onMouseweel"></canvas>
-    <div class="windowList" ref="windowList" v-if="showWindowList && windowList && windowList.length > 1" @scroll="onWindowListScroll">
-      <WindowListItem
-        v-for="(item, index) in windowListInner"
-        ref="WindowListItem"
-        :key="index"
-        :index="index"
-        :data="item"
-        :totalMS="totalMS"
-        :startTimestamp="startTimestamp"
-        :width="width"
-        :active="item.active"
-        @click_window_timeSegments="triggerClickWindowTimeSegments"
-        @click="toggleActive(index)"
-      ></WindowListItem>
+    <div class="windowList" ref="windowList" v-if="showWindowList && windowList && windowList.length > 1"
+      @scroll="onWindowListScroll">
+      <WindowListItem v-for="(item, index) in windowListInner" ref="WindowListItem" :key="index" :index="index"
+        :data="item" :totalMS="totalMS" :startTimestamp="startTimestamp" :width="width" :active="item.active"
+        @click_window_timeSegments="triggerClickWindowTimeSegments" @click="toggleActive(index)"></WindowListItem>
     </div>
   </div>
 </template>
@@ -68,7 +50,7 @@ export default {
     */
     timeRange: {
       type: Object,
-      default () {
+      default() {
         return {}
       }
     },
@@ -85,7 +67,7 @@ export default {
     // 中间竖线的样式
     centerLineStyle: {
       type: Object,
-      default () {
+      default() {
         return {
           width: 2,
           color: '#fff'
@@ -110,7 +92,7 @@ export default {
     // 时间线段高度占时间轴高度的比例
     lineHeightRatio: {
       type: Object,
-      default () {
+      default() {
         return {
           date: 0.3, // 0点时的日期线段高度
           time: 0.2, // 显示时间的线段高度
@@ -170,7 +152,7 @@ export default {
     */
     windowList: {
       type: Array,
-      default () {
+      default() {
         return []
       }
     },
@@ -190,7 +172,7 @@ export default {
       default: false
     }
   },
-  data () {
+  data() {
     return {
       width: 0,
       height: 0,
@@ -210,11 +192,11 @@ export default {
   },
   computed: {
     // 整个时间轴所代表的毫秒数
-    totalMS () {
+    totalMS() {
       return ZOOM[this.currentZoomIndex] * ONE_HOUR_STAMP
     },
     // 时间范围的时间戳表示
-    timeRangeTimestamp () {
+    timeRangeTimestamp() {
       let t = {}
       if (this.timeRange.start) {
         t.start = typeof this.timeRange.start === 'number' ? this.timeRange.start : new Date(this.timeRange.start).getTime()
@@ -224,14 +206,22 @@ export default {
       }
       return t
     },
-    ACT_ZOOM_HOUR_GRID () {
+    ACT_ZOOM_HOUR_GRID() {
       return this.isMobile ? MOBILE_ZOOM_HOUR_GRID : ZOOM_HOUR_GRID
     },
-    ACT_ZOOM_DATE_SHOW_RULE () {
+    ACT_ZOOM_DATE_SHOW_RULE() {
       return this.isMobile ? MOBILE_ZOOM_DATE_SHOW_RULE : ZOOM_DATE_SHOW_RULE
-    }
+    },
+    // 年月模式
+    yearMonthMode() {
+      return this.currentZoomIndex === 9;
+    },
+    // 年模式
+    yearMode() {
+      return this.currentZoomIndex === 10;
+    },
   },
-  mounted () {
+  mounted() {
     this.setInitData()
     this.init()
     this.draw()
@@ -245,7 +235,7 @@ export default {
     }
     window.addEventListener('resize', this.onResize)
   },
-  beforeDestroy () {
+  beforeDestroy() {
     if (this.isMobile) {
       window.removeEventListener('touchend', this.onTouchend)
     } else {
@@ -259,7 +249,7 @@ export default {
      * @Date: 2021-01-19 20:20:45
      * @Desc: 设置初始数据
      */
-    setInitData () {
+    setInitData() {
       // 内部窗口列表数据
       this.windowListInner = this.windowList.map((item, index) => {
         return {
@@ -288,7 +278,7 @@ export default {
      * @Date: 2021-01-20 16:01:21
      * @Desc: 根据时间范围检查并修正起始时间
      */
-    fixStartTimestamp () {
+    fixStartTimestamp() {
       let hfms = this.totalMS / 2
       let ct = this.startTimestamp + hfms
       if (this.timeRangeTimestamp.start && ct < this.timeRangeTimestamp.start) {
@@ -304,7 +294,7 @@ export default {
      * @Date: 2020-04-14 09:20:22
      * @Desc: 初始化
      */
-    init () {
+    init() {
       let {
         width,
         height
@@ -323,7 +313,7 @@ export default {
      * @Date: 2020-04-14 09:27:18
      * @Desc: 绘制方法
      */
-    draw () {
+    draw() {
       // 顺序很重要，不然层级不对
       this.drawTimeSegments()
       this.addGraduations()
@@ -348,7 +338,7 @@ export default {
      * @Date: 2021-01-21 10:50:11
      * @Desc:  更新观察的时间位置
      */
-    updateWatchTime () {
+    updateWatchTime() {
       this.watchTimeList.forEach((item) => {
         // 当前不在显示范围内
         if (item.time < this.startTimestamp || item.time > this.startTimestamp + this.totalMS) {
@@ -373,7 +363,7 @@ export default {
      * @Date: 2020-04-14 09:27:46
      * @Desc: 绘制中间的竖线
      */
-    drawMiddleLine () {
+    drawMiddleLine() {
       if (!this.showCenterLine) {
         return
       }
@@ -388,7 +378,7 @@ export default {
      * @Date: 2020-04-14 11:03:44
      * @Desc: 绘制时间刻度
      */
-    addGraduations () {
+    addGraduations() {
       this.ctx.beginPath()
       // 一共可以绘制的格数
       let gridNum =
@@ -401,8 +391,17 @@ export default {
       let msOffset = msPerGrid - (this.startTimestamp % msPerGrid)
       let pxOffset = (msOffset / msPerGrid) * pxPerGrid
       for (let i = 0; i < gridNum; i++) {
-        let x = pxOffset + i * pxPerGrid
-        let graduationTime = this.startTimestamp + msOffset + i * msPerGrid
+        let currentStartTimestamp = this.startTimestamp + msOffset + i * msPerGrid
+        let adjustMsOffset = 0
+        // 分辨率以年为单位
+        if (this.yearMode) {
+          adjustMsOffset = currentStartTimestamp - new Date(`${dayjs(currentStartTimestamp).format('YYYY')}-01-01 00:00:00`).getTime()
+        } else if (this.yearMonthMode) {
+          // 分辨率以月为单位
+          adjustMsOffset = currentStartTimestamp - new Date(`${dayjs(currentStartTimestamp).format('YYYY')}-${dayjs(currentStartTimestamp).format('MM')}-01 00:00:00`).getTime()
+        }
+        let x = pxOffset + i * pxPerGrid - (adjustMsOffset / msPerGrid) * pxPerGrid
+        let graduationTime = currentStartTimestamp - adjustMsOffset
         let h = 0
         let date = new Date(graduationTime)
         // 0点显示日期
@@ -436,7 +435,7 @@ export default {
      * @Date: 2020-04-14 15:42:49
      * @Desc: 绘制时间段
      */
-    drawTimeSegments (callback, path) {
+    drawTimeSegments(callback, path) {
       const PX_PER_MS = this.width / this.totalMS // px/ms，每毫秒占的像素
       this.timeSegments.forEach((item) => {
         if (
@@ -476,7 +475,7 @@ export default {
     },
 
     // 触摸开始事件
-    onTouchstart (e) {
+    onTouchstart(e) {
       if (!this.isMobile) {
         return
       }
@@ -489,7 +488,7 @@ export default {
      * @Date: 2020-04-14 14:29:40
      * @Desc: 鼠标按下事件
      */
-    onMousedown (e) {
+    onMousedown(e) {
       if (this.isMobile) {
         return
       }
@@ -497,7 +496,7 @@ export default {
     },
 
     // 按下事件
-    onPointerdown (e) {
+    onPointerdown(e) {
       let pos = this.getClientOffset(e)
       this.mousedownX = pos[0]
       this.mousedownY = pos[1]
@@ -507,7 +506,7 @@ export default {
     },
 
     // 触摸结束事件
-    onTouchend (e) {
+    onTouchend(e) {
       if (!this.isMobile) {
         return
       }
@@ -520,7 +519,7 @@ export default {
      * @Date: 2020-04-14 14:38:30
      * @Desc: 鼠标松开
      */
-    onMouseup (e) {
+    onMouseup(e) {
       if (this.isMobile) {
         return
       }
@@ -561,7 +560,7 @@ export default {
      * @Date: 2020-04-14 14:17:02
      * @Desc: 鼠标移动事件
      */
-    onMousemove (e) {
+    onMousemove(e) {
       if (this.isMobile) {
         return
       }
@@ -586,7 +585,7 @@ export default {
      * @Date: 2021-01-21 10:40:37
      * @Desc: 鼠标移出事件
      */
-    onMouseleave () {
+    onMouseleave() {
       this.mousemoveX = -1
     },
 
@@ -595,7 +594,7 @@ export default {
      * @Date: 2021-01-20 15:29:46
      * @Desc: 按下拖动
      */
-    drag (x) {
+    drag(x) {
       if (!this.enableDrag) {
         return
       }
@@ -622,7 +621,7 @@ export default {
      * @Date: 2021-01-20 15:29:52
      * @Desc: 未按下显示鼠标所在时间
      */
-    hoverShow (x, noDraw) {
+    hoverShow(x, noDraw) {
       const PX_PER_MS = this.width / this.totalMS // px/ms
       let time = this.startTimestamp + x / PX_PER_MS
       if (!noDraw) {
@@ -642,7 +641,7 @@ export default {
      * @Date: 2020-04-14 14:28:48
      * @Desc: 鼠标移出事件
      */
-    onMouseout () {
+    onMouseout() {
       this.clearCanvas(this.width, this.height)
       this.draw()
     },
@@ -652,7 +651,7 @@ export default {
      * @Date: 2020-04-14 15:14:12
      * @Desc: 鼠标滚动
      */
-    onMouseweel (event) {
+    onMouseweel(event) {
       if (!this.enableZoom) {
         return
       }
@@ -682,7 +681,7 @@ export default {
      * @Date: 2021-01-20 16:22:04
      * @Desc: 点击事件
      */
-    onClick (x, y) {
+    onClick(x, y) {
       let timeSegments = this.getClickTimeSegments(x, y)
       if (timeSegments && timeSegments.length > 0) {
         this.$emit('click_timeSegments', timeSegments)
@@ -694,7 +693,7 @@ export default {
      * @Date: 2021-01-20 16:24:54
      * @Desc: 检测当前是否点击了某个时间段
      */
-    getClickTimeSegments (x, y) {
+    getClickTimeSegments(x, y) {
       let inItems = []
       this.drawTimeSegments((item) => {
         if (this.ctx.isPointInPath(x, y)) {
@@ -709,7 +708,7 @@ export default {
      * @Date: 2021-01-20 11:14:30
      * @Desc: 获取鼠标相当于时间轴的距离
      */
-    getClientOffset (e) {
+    getClientOffset(e) {
       if (!this.$refs.timeLineContainer || !e) {
         return [0, 0]
       }
@@ -722,7 +721,7 @@ export default {
      * @Date: 2020-04-14 14:25:43
      * @Desc: 清除画布
      */
-    clearCanvas (w, h) {
+    clearCanvas(w, h) {
       this.ctx.clearRect(0, 0, w, h)
     },
 
@@ -731,9 +730,13 @@ export default {
      * @Date: 2020-04-14 14:15:25
      * @Desc: 时间格式化
      */
-    graduationTitle (datetime) {
+    graduationTitle(datetime) {
       let time = dayjs(datetime)
-      if (
+      if (this.yearMode) {
+        return time.format('YYYY')
+      } else if (this.yearMonthMode) {
+        return time.format('YYYY-MM')
+      } else if (
         time.hour() === 0 &&
         time.minute() === 0 &&
         time.millisecond() === 0
@@ -749,7 +752,7 @@ export default {
      * @Date: 2020-04-14 11:28:37
      * @Desc: 绘制线段
      */
-    drawLine (x1, y1, x2, y2, lineWidth = 1, color = '#fff') {
+    drawLine(x1, y1, x2, y2, lineWidth = 1, color = '#fff') {
       this.ctx.beginPath()
       this.ctx.strokeStyle = color
       this.ctx.lineWidth = lineWidth
@@ -763,7 +766,7 @@ export default {
      * @Date: 2021-01-20 15:57:11
      * @Desc: 重新渲染
      */
-    reRender () {
+    reRender() {
       this.$nextTick(() => {
         this.clearCanvas(this.width, this.height)
         this.reset()
@@ -778,7 +781,7 @@ export default {
      * @Date: 2021-01-20 16:07:53
      * @Desc: 复位
      */
-    reset () {
+    reset() {
       this.width = 0
       this.height = 0
       this.ctx = null
@@ -795,7 +798,7 @@ export default {
      * @Date: 2021-01-20 15:57:26
      * @Desc: 设置当前时间
      */
-    setTime (t) {
+    setTime(t) {
       if (this.mousedown) {
         return
       }
@@ -814,7 +817,7 @@ export default {
      * @Date: 2021-01-20 19:32:39
      * @Desc: 转发窗口时间轴的事件
      */
-    triggerClickWindowTimeSegments (data, index, item) {
+    triggerClickWindowTimeSegments(data, index, item) {
       this.$emit('click_window_timeSegments', data, index, item)
     },
 
@@ -823,7 +826,7 @@ export default {
      * @Date: 2021-01-21 09:58:17
      * @Desc: 设置分辨率
      */
-    setZoom (index) {
+    setZoom(index) {
       this.currentZoomIndex =
         index >= 0 && index < ZOOM.length
           ? index
@@ -838,7 +841,7 @@ export default {
      * @Date: 2021-01-21 10:15:30
      * @Desc: 切换窗口时间轴的选中
      */
-    toggleActive (index) {
+    toggleActive(index) {
       this.windowListInner.forEach((item) => {
         item.active = false
       })
@@ -851,7 +854,7 @@ export default {
      * @Date: 2021-01-21 10:47:28
      * @Desc: 要观察的时间点，会返回该时间点的实时位置，你可以根据该位置来设置一些你的自定义元素，位置为相对于浏览器可视窗口的位置
      */
-    watchTime (time, callback, windowTimeLineIndex) {
+    watchTime(time, callback, windowTimeLineIndex) {
       if (!time || !callback) {
         return
       }
@@ -867,7 +870,7 @@ export default {
      * @Date: 2021-01-21 13:36:37
      * @Desc: 窗口时间轴滚动
      */
-    onWindowListScroll () {
+    onWindowListScroll() {
       this.updateWatchTime()
     },
 
@@ -876,7 +879,7 @@ export default {
      * @Date: 2021-01-21 13:40:53
      * @Desc: 尺寸重适应
      */
-    onResize () {
+    onResize() {
       this.init()
       this.draw()
       try {
