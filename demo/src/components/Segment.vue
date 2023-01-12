@@ -3,7 +3,7 @@
         <div class="timeShow">当前时间：{{ showTime2 }}</div>
         <div class="timeLine">
             <TimeLine ref="Timeline2" :initTime="time2" @timeChange="timeChange2" :timeSegments="timeSegments"
-                @click_timeSegments="click_timeSegments"></TimeLine>
+                @click_timeSegments="click_timeSegments" @click_timeline="onClickTimeLine"  @dragTimeChange="onDragTimeChange"></TimeLine>
         </div>
     </div>
 </template>
@@ -33,7 +33,8 @@ export default {
                     startRatio: 0.65,
                     endRatio: 0.9
                 }
-            ]
+            ],
+            timer: null
         }
     },
     computed: {
@@ -44,10 +45,13 @@ export default {
     },
     mounted() {
         // 显示时间段
-        setInterval(() => {
+        this.timer = setInterval(() => {
             this.time2 += 1000
             this.$refs.Timeline2.setTime(this.time2)
         }, 1000)
+    },
+    beforeDestroy () {
+        clearTimeout(this.timer)  
     },
     methods: {
         // 显示时间段
@@ -55,7 +59,14 @@ export default {
             this.time2 = t
         },
         click_timeSegments(arr) {
+            console.log('onClickTimeSegments', arr)
             alert('点击了：' + arr[0].name)
+        },
+        onClickTimeLine(...args) {
+            console.log('onClickTimeLine', args)
+        },
+        onDragTimeChange(...args) {
+            console.log('onDragTimeChange', args)
         }
     }
 }
