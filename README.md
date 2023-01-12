@@ -524,6 +524,7 @@ export default {
 | windowList | 播放窗口列表，播放窗口数量大于1的话可以配置此项，会显示和窗口对应数量的时间轴，只有一个窗口的话请直接使用基本时间轴，对象数组类型，对象字段见表1-5 | Array | —      | [] |
 | baseTimeLineHeight | 当显示windowList时的基础时间轴高度 | Number | —      | 50 |
 | initSelectWindowTimeLineIndex | 初始选中的窗口时间轴索引 | Number | —      | -1 |
+| maxClickDistance（v0.1.2+） | 鼠标按下和松开的距离小于该值认为是点击事件 | Number | —      | 3 |
 
 ### 表1-1 timeRange对象的字段格式
 
@@ -576,6 +577,7 @@ export default {
 | click_timeSegments | 点击到了基础时间轴里的时间段时触发 | timeSegments（点击到的时间段，数组类型） |
 | click_window_timeSegments | 点击到了窗口时间轴里的时间段时触发 | timeSegments（点击到的时间段，数组类型）、index（时间轴索引）、item（时间轴数据） |
 | change_window_time_line | 点击窗口时间轴进行切换选中时触发 | index（时间轴索引）、item（时间轴数据） |
+| click_timeline（v0.1.2+） | 时间轴的点击事件 | time（点击位置对应的时间戳）、 date（点击位置对应的日期时间字符串）、 x（点击位置相对时间轴左侧的距离） |
 
 ## 方法
 

@@ -3,7 +3,7 @@
     backgroundColor: backgroundColor,
   }" @touchstart="onTouchstart" @touchmove="onTouchmove" @mousedown="onMousedown" @mouseout="onMouseout"
     @mousemove="onMousemove" @mouseleave="onMouseleave">
-    <canvas class="canvas" ref="canvas" @mousewheel.stop.prevent="onMouseweel"></canvas>
+    <canvas class="canvas" ref="canvas" @mousewheel.stop.prevent="onMouseweel" @click="onCanvasClick"></canvas>
     <div class="windowList" ref="windowList" v-if="showWindowList && windowList && windowList.length > 1"
       @scroll="onWindowListScroll">
       <WindowListItem v-for="(item, index) in windowListInner" ref="WindowListItem" :key="index" :index="index"
@@ -170,7 +170,12 @@ export default {
     isMobile: {
       type: Boolean,
       default: false
-    }
+    },
+    // 鼠标按下和松开的距离小于该值认为是点击事件
+    maxClickDistance: {
+      type: Number,
+      default: 3
+    },
   },
   data() {
     return {
@@ -183,6 +188,7 @@ export default {
       mousedown: false,
       mousedownX: 0,
       mousedownY: 0,
+      mousedownXUseByDiscriminateClick: 0,
       mousedownCacheStartTimestamp: 0,
       showWindowList: false,
       windowListInner: [],
@@ -498,6 +504,7 @@ export default {
     // 按下事件
     onPointerdown(e) {
       let pos = this.getClientOffset(e)
+      this.mousedownXUseByDiscriminateClick = pos[0]
       this.mousedownX = pos[0]
       this.mousedownY = pos[1]
       this.mousedown = true
@@ -887,6 +894,19 @@ export default {
           item.init()
         })
       } catch (error) { }
+    },
+
+    // 时间轴点击事件
+    onCanvasClick(e) {
+      let x = this.getClientOffset(e)[0]
+      if (Math.abs(this.mousedownXUseByDiscriminateClick - x) >= this.maxClickDistance) {
+        return
+      }
+      this.mousedownXUseByDiscriminateClick = 0
+      const PX_PER_MS = this.width / this.totalMS // px/ms
+      let time = this.startTimestamp + x / PX_PER_MS
+      let date = dayjs(time).format('YYYY-MM-DD HH:mm:ss')
+      this.$emit('click_timeline', time, date, x)
     }
   }
 }
