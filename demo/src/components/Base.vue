@@ -29,7 +29,8 @@ export default {
                     label: item,
                     value: index
                 }
-            })
+            }),
+            timer: null
         }
     },
     computed: {
@@ -40,10 +41,13 @@ export default {
     },
     mounted() {
         // 基础用法
-        setInterval(() => {
+        this.timer = setInterval(() => {
             this.time += 1000
             this.$refs.Timeline.setTime(this.time)
         }, 1000)
+    },
+    beforeDestroy () {
+        clearTimeout(this.timer)  
     },
     methods: {
         // 基础用法

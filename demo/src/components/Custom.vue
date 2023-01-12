@@ -37,6 +37,7 @@ export default {
                     name: '窗口6'
                 }
             ],
+            timer: null
         }
     },
     computed: {
@@ -47,7 +48,7 @@ export default {
     },
     mounted() {
         // 显示自定义元素
-        setInterval(() => {
+        this.timer = setInterval(() => {
             this.time4 += 1000
             this.$refs.Timeline4.setTime(this.time4)
         }, 1000)
@@ -72,6 +73,9 @@ export default {
                 this.$refs.carIcon.style.top = y + 'px'
             }
         }, 2)
+    },
+    beforeDestroy () {
+        clearTimeout(this.timer)  
     },
     methods: {
         // 显示自定义元素

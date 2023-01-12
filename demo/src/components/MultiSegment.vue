@@ -83,6 +83,7 @@ export default {
                     name: '窗口6'
                 }
             ],
+            timer: null,
         }
     },
     computed: {
@@ -93,10 +94,13 @@ export default {
     },
     mounted() {
         // 多个时间轴
-        setInterval(() => {
+        this.timer = setInterval(() => {
             this.time3 += 1000
             this.$refs.Timeline3.setTime(this.time3)
         }, 1000)
+    },
+    beforeDestroy () {
+        clearTimeout(this.timer)  
     },
     methods: {
         // 多个时间轴
