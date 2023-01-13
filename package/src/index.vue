@@ -545,8 +545,8 @@ export default {
         Math.abs(pos[0] - this.mousedownX) <= this.maxClickDistance &&
         Math.abs(pos[1] - this.mousedownY) <= this.maxClickDistance
       ) {
-        this.onClick(...pos)
         reset()
+        this.onClick(...pos)
         return
       }
       if (this.mousedown && this.enableDrag) {
