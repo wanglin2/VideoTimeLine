@@ -550,9 +550,11 @@ export default {
         return
       }
       if (this.mousedown && this.enableDrag) {
+        reset()
         this.$emit('dragTimeChange', this.currentTime)
+      } else {
+        reset()
       }
-      reset()
       this.$emit('mouseup', e)
     },
 
