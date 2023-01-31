@@ -176,6 +176,11 @@ export default {
       type: Number,
       default: 3
     },
+    // 绘制时间段时对计算出来的坐标进行四舍五入，可以防止相连的时间段绘制出来有间隔的问题
+    roundWidthTimeSegments: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {
@@ -458,6 +463,10 @@ export default {
           }
           let heightStartRatio = item.startRatio === undefined ? 0.6 : item.startRatio
           let heightEndRatio = item.endRatio === undefined ? 0.9 : item.endRatio
+          if (this.roundWidthTimeSegments) {
+            x = Math.round(x)
+            w = Math.round(w)
+          }
           if (path) {
             this.ctx.rect(
               x,
