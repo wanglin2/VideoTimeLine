@@ -525,6 +525,7 @@ export default {
 | baseTimeLineHeight | 当显示windowList时的基础时间轴高度 | Number | —      | 50 |
 | initSelectWindowTimeLineIndex | 初始选中的窗口时间轴索引 | Number | —      | -1 |
 | maxClickDistance（v0.1.2+） | 鼠标按下和松开的距离小于该值认为是点击事件 | Number | —      | 3 |
+| roundWidthTimeSegments（v0.1.6+） | 绘制时间段时对计算出来的坐标进行四舍五入，可以防止相连的时间段绘制出来有间隔的问题 | Boolean | —      | true |
 
 ### 表1-1 timeRange对象的字段格式
 
