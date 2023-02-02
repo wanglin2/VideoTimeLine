@@ -235,6 +235,12 @@ export default {
       return this.currentZoomIndex === 10;
     },
   },
+  watch: {
+    timeSegments: {
+      deep: true,
+      handler: 'reRender'
+    }
+  },
   mounted() {
     this.setInitData()
     this.init()
@@ -466,17 +472,17 @@ export default {
       const PX_PER_MS = this.width / this.totalMS // px/ms，每毫秒占的像素
       this.timeSegments.forEach((item) => {
         if (
-          item.beginTime <= this.startTimestamp + this.totalMS &&
-          item.endTime >= this.startTimestamp
+          item.beginTime <= this.startTimestamp + this.totalMS
         ) {
+          let hasEndTime = item.endTime >= this.startTimestamp
           this.ctx.beginPath()
           let x = (item.beginTime - this.startTimestamp) * PX_PER_MS
           let w
           if (x < 0) {
             x = 0
-            w = (item.endTime - this.startTimestamp) * PX_PER_MS
+            w = hasEndTime ? (item.endTime - this.startTimestamp) * PX_PER_MS : 1
           } else {
-            w = (item.endTime - item.beginTime) * PX_PER_MS
+            w = hasEndTime ? (item.endTime - item.beginTime) * PX_PER_MS : 1
           }
           let heightStartRatio = item.startRatio === undefined ? 0.6 : item.startRatio
           let heightEndRatio = item.endRatio === undefined ? 0.9 : item.endRatio

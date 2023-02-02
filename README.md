@@ -600,6 +600,8 @@ export default {
 | startRatio | 高度的起始比例，即top=时间轴高度*startRatio | Number | —      | 0.6 |
 | endRatio | 高度的结束比例，即bottom=时间轴高度*endRatio | Number | —      | 0.9 |
 
+> 从v0.1.8+版本开始，时间段可以只传一个beginTime，绘制一根宽度为1px的线段
+
 ### 表1-5 windowList数组的对象元素的字段格式
 
 | 字段名  | 说明                               | 类型   | 可选值 | 默认值 |
