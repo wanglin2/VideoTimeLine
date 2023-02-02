@@ -180,6 +180,10 @@ export default {
     roundWidthTimeSegments: {
       type: Boolean,
       default: true
+    },
+    // 自定义显示哪些时间
+    customShowTime: {
+      type: Function,
     }
   },
   data() {
@@ -423,7 +427,7 @@ export default {
             x - 13,
             h + 15
           )
-        } else if (this.ACT_ZOOM_DATE_SHOW_RULE[this.currentZoomIndex](date)) {
+        } else if (this.checkShowTime(date)) {
           // 其余时间根据各自规则显示
           h = this.height * (this.lineHeightRatio.time === undefined ? 0.2 : this.lineHeightRatio.time)
           this.ctx.fillStyle = this.textColor
@@ -438,6 +442,19 @@ export default {
         }
         this.drawLine(x, 0, x, h, 1, this.lineColor)
       }
+    },
+
+    // 判断是否需要显示该时间
+    checkShowTime(date) {
+      if (this.customShowTime) {
+        let res = this.customShowTime(date, this.currentZoomIndex)
+        if (res === true) {
+          return true
+        } else if (res === false) {
+          return false
+        }
+      }
+      return this.ACT_ZOOM_DATE_SHOW_RULE[this.currentZoomIndex](date)
     },
 
     /**

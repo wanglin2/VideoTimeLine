@@ -526,6 +526,46 @@ export default {
 | initSelectWindowTimeLineIndex | 初始选中的窗口时间轴索引 | Number | —      | -1 |
 | maxClickDistance（v0.1.2+） | 鼠标按下和松开的距离小于该值认为是点击事件 | Number | —      | 3 |
 | roundWidthTimeSegments（v0.1.6+） | 绘制时间段时对计算出来的坐标进行四舍五入，可以防止相连的时间段绘制出来有间隔的问题 | Boolean | —      | true |
+| customShowTime（v0.1.7+） | 自定义显示哪些时间，详细请阅读下方【属性详解1-1】 | Function | — |  |
+
+### 属性详解1-1 customShowTime的用法
+
+>  该属性在v0.1.7+版本开始支持
+
+当你在使用本组件的时候可能会遇到一个很常见的问题，比如容器的宽度很小，然后时间段展示的又是几天、甚至半个月的时间，那么很容易遇到时间段里面时间都挤在一起的问题，比如这个[issue](https://github.com/wanglin2/VideoTimeLine/issues/3)，其实组件内部是内置了一些判断方法，比如在`3天`的时间分辨率下，对应的`initZoomIndex=6`，对应关系可参考上方属性表格，那么就会使用`3天`的这个判断规则，如下：
+
+```js
+date => { // 每三小时显示
+    return date.getHours() % 3 === 0 && date.getMinutes() === 0
+}
+```
+
+意思是显示`3`的倍数的整点小时，那么当你容器宽度不够，且时间分辨率设置的比较大，那么时间就会挤在一起看不清，这时候你就可以通过`customShowTime`属性传入自定义的判断方法，这个方法接收两个参数：
+
+- `date`：是否要显示的时间，可以根据该时间进行判断是否要显示这个时间
+- `currentZoomIndex`：当前的时间分辨率，比如`3天`对应的就是`6`，对应关系可参考上方属性表格
+
+那么如果内置的规则不满足的话，就可以自定义，比如`3天`的时间分辨率下我想只显示`12`倍数的小时，可以这么做：
+
+```html
+<TimeLine :customShowTime="customShowTime""></TimeLine>
+```
+
+```js
+export default {
+    methods: {
+        customShowTime(date, zoomIndex) {
+            if (zoomIndex === 6) {
+                return date.getHours() % 12 === 0 && date.getMinutes() === 0
+            }
+        }
+    }
+}
+```
+
+函数返回值需要注意一下，如果要显示返回`true`，如果不显示返回`false`，如果不处理，仍旧交给内部规则，返回其他值。
+
+
 
 ### 表1-1 timeRange对象的字段格式
 
