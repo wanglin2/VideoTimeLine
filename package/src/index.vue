@@ -484,6 +484,8 @@ export default {
             x = Math.round(x)
             w = Math.round(w)
           }
+          // 避免时间段小于1px绘制不出来
+          w = Math.max(1, w)
           if (path) {
             this.ctx.rect(
               x,
