@@ -1,14 +1,41 @@
 <template>
-  <div class="timeLineContainer" ref="timeLineContainer" :style="{
-    backgroundColor: backgroundColor,
-  }" @touchstart="onTouchstart" @touchmove="onTouchmove" @mousedown="onMousedown" @mouseout="onMouseout"
-    @mousemove="onMousemove" @mouseleave="onMouseleave">
-    <canvas class="canvas" ref="canvas" @mousewheel.stop.prevent="onMouseweel"></canvas>
-    <div class="windowList" ref="windowList" v-if="showWindowList && windowList && windowList.length > 1"
-      @scroll="onWindowListScroll">
-      <WindowListItem v-for="(item, index) in windowListInner" ref="WindowListItem" :key="index" :index="index"
-        :data="item" :totalMS="totalMS" :startTimestamp="startTimestamp" :width="width" :active="item.active"
-        @click_window_timeSegments="triggerClickWindowTimeSegments" @click="toggleActive(index)"></WindowListItem>
+  <div 
+    class="timeLineContainer" 
+    ref="timeLineContainer" 
+    :style="{
+      backgroundColor: backgroundColor,
+    }" 
+    @touchstart="onTouchstart" 
+    @touchmove="onTouchmove" 
+    @mousedown="onMousedown" 
+    @mouseout="onMouseout"
+    @mousemove="onMousemove" 
+    @mouseleave="onMouseleave"
+  >
+    <canvas 
+      class="canvas" 
+      ref="canvas" 
+      @mousewheel.stop.prevent="onMouseweel"
+    ></canvas>
+    <div 
+      class="windowList" 
+      ref="windowList" 
+      v-if="showWindowList && windowList && windowList.length > 1"
+      @scroll="onWindowListScroll"
+    >
+      <WindowListItem 
+        v-for="(item, index) in windowListInner" 
+        ref="WindowListItem" 
+        :key="index" 
+        :index="index"
+        :data="item" 
+        :totalMS="totalMS" 
+        :startTimestamp="startTimestamp" 
+        :width="width" 
+        :active="item.active"
+        @click_window_timeSegments="triggerClickWindowTimeSegments" 
+        @click="toggleActive(index)"
+      ></WindowListItem>
     </div>
   </div>
 </template>
@@ -106,6 +133,10 @@ export default {
       type: Boolean,
       default: true
     },
+    // 格式化鼠标滑过时间
+    hoverTimeFormat: {
+      type: Function,
+    },
     // 要显示的时间颜色段
     /*
       {
@@ -184,6 +215,31 @@ export default {
     // 自定义显示哪些时间
     customShowTime: {
       type: Function,
+    },
+    // 0点处是否显示日期
+    showDateAtZero: {
+      type: Boolean,
+      default: true
+    },
+    // 扩展ZOOM列表，这个数组的数据会追加到内部的ZOOM数组，对应的zoomIndex往后累加即可，内部一共有11个zoom，那么你追加了一项，对应的zoomIndex为11，因为是从零开始计数
+    // 数组类型，数组的每一项为：
+    /*
+      {
+        zoom: 26,// 时间分辨率，整个时间轴表示的时间范围，单位：小时
+        zoomHourGrid: 0.5,// 时间分辨率对应的每格小时数，即时间轴上最小格代表多少小时
+        mobileZoomHourGrid: 2, // 手机模式下时间分辨率对应的每格小时数，如果不用适配手机端，可以不用设置
+      }
+    */
+   // 同时你需要传递customShowTime属性来自定义控制时间显示，否则会报错，因为内置的规则只有11个
+    extendZOOM: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    // 格式化时间轴显示时间
+    formatTime: {
+      type: Function
     }
   },
   data() {
@@ -240,6 +296,13 @@ export default {
       deep: true,
       handler: 'reRender'
     }
+  },
+  created () {
+    this.extendZOOM.forEach((item) => {
+      ZOOM.push(item.zoom)
+      ZOOM_HOUR_GRID.push(item.zoomHourGrid)
+      MOBILE_ZOOM_HOUR_GRID.push(item.mobileZoomHourGrid)
+    })
   },
   mounted() {
     this.setInitData()
@@ -425,7 +488,7 @@ export default {
         let h = 0
         let date = new Date(graduationTime)
         // 0点显示日期
-        if (date.getHours() === 0 && date.getMinutes() === 0) {
+        if (this.showDateAtZero && date.getHours() === 0 && date.getMinutes() === 0) {
           h = this.height * (this.lineHeightRatio.date === undefined ? 0.3 : this.lineHeightRatio.date)
           this.ctx.fillStyle = this.textColor
           this.ctx.fillText(
@@ -677,7 +740,7 @@ export default {
       let h = this.height * (this.lineHeightRatio.hover === undefined ? 0.3 : this.lineHeightRatio.hover)
       this.drawLine(x, 0, x, h, 1, this.lineColor)
       this.ctx.fillStyle = this.hoverTextColor
-      let t = dayjs(time).format('YYYY-MM-DD HH:mm:ss')
+      let t = this.hoverTimeFormat ? this.hoverTimeFormat(time) : dayjs(time).format('YYYY-MM-DD HH:mm:ss')
       let w = this.ctx.measureText(t).width
       this.ctx.fillText(t, x - w / 2, h + 20)
     },
@@ -780,6 +843,13 @@ export default {
      */
     graduationTitle(datetime) {
       let time = dayjs(datetime)
+      let res = ''
+      if (this.formatTime) {
+         res = this.formatTime(time)
+      }
+      if (res) {
+        return res
+      }
       if (this.yearMode) {
         return time.format('YYYY')
       } else if (this.yearMonthMode) {

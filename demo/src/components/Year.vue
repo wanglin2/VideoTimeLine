@@ -1,5 +1,7 @@
 <template>
-    <TimeLine ref="Timeline" :enableZoom="false" :initZoomIndex="10" :timeSegments="timeSegments"></TimeLine>
+    <div class="container"> 
+        <TimeLine ref="Timeline" :enableZoom="false" :initZoomIndex="10" :timeSegments="timeSegments"></TimeLine>
+    </div>
 </template>
 
 <script>
@@ -29,6 +31,10 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang="less" scoped>
+.container {
+    width: 1200px;
+    height: 100px;
+    margin: 0 auto;
+}
 </style>

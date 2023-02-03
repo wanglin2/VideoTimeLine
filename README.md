@@ -527,6 +527,10 @@ export default {
 | maxClickDistance（v0.1.2+） | 鼠标按下和松开的距离小于该值认为是点击事件 | Number | —      | 3 |
 | roundWidthTimeSegments（v0.1.6+） | 绘制时间段时对计算出来的坐标进行四舍五入，可以防止相连的时间段绘制出来有间隔的问题 | Boolean | —      | true |
 | customShowTime（v0.1.7+） | 自定义显示哪些时间，详细请阅读下方【属性详解1-1】 | Function | — |  |
+| hoverTimeFormat（v0.1.9+） | 格式化鼠标滑过时间，函数类型，接收一个`time`参数，代表当前鼠标所在的时间戳，函数需要返回一个格式化后的时间字符串，默认显示的时间格式为`YYYY-MM-DD HH:mm:ss` | Function | — | |
+| showDateAtZero（v0.1.9+） | `0`点处是否显示日期，时间轴上默认`0`点处显示的日期，需要显示成时间，那么就需要设为`false`，然后通过`formatTime`属性自定义格式化 | Boolean | — | true |
+| formatTime（v0.1.9+） | 格式化时间轴显示时间，默认规则是`年`模式`YYYY`、`年月`模式`YYYY-MM`、`0`点`MM-DD`、其他`HH:mm`，如果想自定义，比如`0`点还是显示时间，不显示日期，就可以通过该函数进行格式化。如果该函数返回值为空值，那么还会走内部规则。 | Function | — |  |
+| extendZOOM（v0.1.9+） | 扩展ZOOM列表，详细请参考下方【属性详解1-2】 | Array | — | [] |
 
 ### 属性详解1-1 customShowTime的用法
 
@@ -564,6 +568,96 @@ export default {
 ```
 
 函数返回值需要注意一下，如果要显示返回`true`，如果不显示返回`false`，如果不处理，仍旧交给内部规则，返回其他值。
+
+
+
+### 属性详解1-2  extendZOOM的用法
+
+该属性用于扩展`ZOOM`列表，即时间分辨率，内置了`11`个时间分辨率，可以参考上方表格`initZoomIndex`属性，如果内置的时间分辨率满足不了你，那么可以通过该属性进行扩展。
+
+`extendZOOM`为数组类型，数组的每一项为：
+
+```js
+{
+    zoom: 26, // 时间分辨率，整个时间轴表示的时间范围，单位：小时
+    zoomHourGrid: 0.5, //时间分辨率对应的每格小时数，即时间轴上最小格代表多少小时
+    mobileZoomHourGrid: 2, // 手机模式下时间分辨率对应的每格小时数，如果不用适配手机端，可以不用设置
+}
+```
+
+这个数组的数据会追加到内部的`ZOOM`数组，对应的`zoomIndex`往后累加即可，内部一共有`11`个`zoom`，那么你追加了一项，对应的`zoomIndex`为11，因为是从零开始计数。
+
+同时你需要传递`customShowTime`属性来自定义控制时间显示，否则会报错，因为内置的规则只有`11`个。
+
+接下来看一个案例。
+
+> 只显示当天的时间， 从00:00:00到23:59:59，详细请看这个[issue](https://github.com/wanglin2/VideoTimeLine/issues/6)
+
+首先默认的`initZoomIndex`为`5`，即`1`天，刚好满足，不用修改，然后将`enableZoom`设为`false`，不允许修改时间分辨率；将`enableDrag`设为`false`，不允许拖拽； 然后再将`initTime`设为当天的`12:00:00`，那么刚好整个时间轴显示的就是当前的时间，到这里，似乎就可以了。但是实际上会存在一些问题，如前面的`issue`中所示。
+
+问题1：`0`点处显示的是日期，需要改成时间
+
+很简单，将`showDateAtZero`设为`false`，`0`点就不会显示日期了
+
+问题2：鼠标滑过显示的还是带日期的，这个好办，通过`hoverTimeFormat`属性自定义格式化规则即可：
+
+```js
+hoverTimeFormat(time) {
+    // 小于今天，大于今天的时间不显示
+    if (
+        dayjs(time).isBefore(dayjs().format('YYYY-MM-DD 00:00:00')) ||
+        dayjs(time).isAfter(dayjs().format('YYYY-MM-DD 23:59:59'))
+    ) {
+        return ''
+    }
+    return dayjs(time).format('HH:mm:ss')
+}
+```
+
+问题3：左右两侧的时间显示不出来
+
+即`0`点和`24`点的时间刚好是两端，因实现原理问题，无法显示，怎么办呢，其实很简单，假如时间轴表示的时间范围为`25`小时，那么左右两端不就会各多出半小时的时间吗，这个空间足够显示时间了，但是内部的时间分辨率没有`25`小时的，这时就需要扩展时间分辨率了：
+
+```js
+extendZOOM: [
+    {
+        zoom: 25,
+        zoomHourGrid: 0.5
+    }
+]
+```
+
+扩展了`extendZOOM`，`customShowTime`不能少，否则会报错：
+
+```js
+customShowTime(date, zoomIndex) {
+    // 当zoomIndex等于11，也就是等于我们开展的zoom时才自己处理
+    if (zoomIndex === 11) {
+        // 时间是2的倍数时才会显示
+        return date.getHours() % 2 === 0 && date.getMinutes() === 0
+    }
+}
+```
+
+到这里，你还会发现一个问题，`24`点实际上是下一天的`0`点，所以显示的是`00:00`，这样可能不符合我们的需求，这时我们可以通过`formatTime`来格式化时间轴上的时间显示，判断是下一天的`0`点，那么就改成`24:00`：
+
+```js
+formatTime(time) {
+    // 下一天的00:00显示24:00
+    if (time.isAfter(dayjs().format('YYYY-MM-DD 23:59:59'))) {
+        return '24:00'
+    }
+    if (
+        time.hour() === 0 &&
+        time.minute() === 0 &&
+        time.millisecond() === 0
+    ) {
+        return time.format('HH:mm')
+    }
+}
+```
+
+完整代码请参考：[CustomZoom.vue](https://github.com/wanglin2/VideoTimeLine/blob/main/demo/src/components/CustomZoom.vue)。
 
 
 

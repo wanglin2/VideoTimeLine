@@ -19,6 +19,7 @@ import MultiSegment from './components/MultiSegment.vue';
 import Segment from './components/Segment.vue';
 import Year from './components/Year.vue';
 import YearMonth from './components/YearMonth.vue';
+import CustomZoom from './components/CustomZoom.vue';
 
 export default {
   name: 'App',
@@ -28,7 +29,8 @@ export default {
     MultiSegment,
     Segment,
     Year,
-    YearMonth
+    YearMonth,
+    CustomZoom
   },
   data() {
     return {
@@ -56,6 +58,9 @@ export default {
         , {
           name: '显示到年月',
           value: 'YearMonth'
+        }, {
+          name: '自定义时间分辨率',
+          value: 'CustomZoom'
         }
       ]
     }

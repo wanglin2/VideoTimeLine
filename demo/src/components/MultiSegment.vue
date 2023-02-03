@@ -119,8 +119,9 @@ export default {
   
 <style lang="less" scoped>
 .container {
-    width: 100%;
+    width: 1200px;
     height: 100%;
+    margin: 0 auto;
     display: flex;
     position: relative;
     justify-content: center;
