@@ -711,7 +711,7 @@ formatTime(time) {
 | dragTimeChange | 拖动时间条结束后的事件 | currentTime（当前时间，时间戳格式） |
 | mousedown | 鼠标按下事件 | e（事件对象） |
 | mouseup | 鼠标松开事件 | e（事件对象） |
-| click_timeSegments | 点击到了基础时间轴里的时间段时触发 | timeSegments（点击到的时间段，数组类型） |
+| click_timeSegments | 点击到了基础时间轴里的时间段时触发 | timeSegments（点击到的时间段，数组类型）、time（v0.1.10+，点击位置对应的时间戳）、 date（v0.1.10+，点击位置对应的日期时间字符串）、 x（v0.1.10+，点击位置相对时间轴左侧的距离） |
 | click_window_timeSegments | 点击到了窗口时间轴里的时间段时触发 | timeSegments（点击到的时间段，数组类型）、index（时间轴索引）、item（时间轴数据） |
 | change_window_time_line | 点击窗口时间轴进行切换选中时触发 | index（时间轴索引）、item（时间轴数据） |
 | click_timeline（v0.1.2+） | 时间轴的点击事件 | time（点击位置对应的时间戳）、 date（点击位置对应的日期时间字符串）、 x（点击位置相对时间轴左侧的距离） |

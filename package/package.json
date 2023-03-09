@@ -1,6 +1,6 @@
 {
   "name": "@wanglin1994/video-timeline",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "一个基于Vue2的时间轴组件，一般用于监控视频的回放。",
   "main": "index.js",
   "scripts": {},

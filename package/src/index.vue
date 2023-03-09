@@ -791,11 +791,14 @@ export default {
      * @Desc: 点击事件
      */
     onClick(x, y) {
+      const PX_PER_MS = this.width / this.totalMS // px/ms
+      let time = this.startTimestamp + x / PX_PER_MS
+      let date = dayjs(time).format('YYYY-MM-DD HH:mm:ss')
       let timeSegments = this.getClickTimeSegments(x, y)
       if (timeSegments && timeSegments.length > 0) {
-        this.$emit('click_timeSegments', timeSegments)
+        this.$emit('click_timeSegments', timeSegments, time, date, x)
       } else {
-        this.onCanvasClick(x)
+        this.onCanvasClick(time, date, x)
       }
     },
 
@@ -1008,11 +1011,8 @@ export default {
     },
 
     // 时间轴点击事件
-    onCanvasClick(x) {
-      const PX_PER_MS = this.width / this.totalMS // px/ms
-      let time = this.startTimestamp + x / PX_PER_MS
-      let date = dayjs(time).format('YYYY-MM-DD HH:mm:ss')
-      this.$emit('click_timeline', time, date, x)
+    onCanvasClick(...args) {
+      this.$emit('click_timeline', ...args)
     }
   }
 }
